@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -24,10 +25,16 @@ public class EmployeeServiceImplTest {
 
     @Test
     public void testFindByEmail() {
+        Employee testEmployee = new Employee();
 
-        Mockito.when(employeeRepository.findByEmail("test@example.com")).thenReturn(Arrays.asList(new Employee()));
-        List<Employee> employees = employeeService.findByEmail("test@example.com");
-        assertEquals(1, employees.size());
+        testEmployee.setEmail("test@example.com");
+
+        Mockito.when(employeeRepository.findByEmail("test@example.com")).thenReturn(Optional.of(testEmployee));
+
+        Optional<Employee> employeeOptional = employeeService.findByEmail("test@example.com");
+
+        assertEquals(true, employeeOptional.isPresent());
+        assertEquals("test@example.com", employeeOptional.get().getEmail());
     }
 
     @Test

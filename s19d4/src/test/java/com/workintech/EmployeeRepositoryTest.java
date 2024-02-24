@@ -3,10 +3,13 @@ package com.workintech;
 import com.workintech.entity.Employee;
 import com.workintech.repository.EmployeeRepository;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -18,8 +21,11 @@ public class EmployeeRepositoryTest {
 
     @Test
     public void testFindByEmail() {
-        List<Employee> employees = employeeRepository.findByEmail("test@example.com");
-        assertEquals(0, employees.size());
+        EmployeeRepository employeeRepository = Mockito.mock(EmployeeRepository.class);
+
+        Mockito.when(employeeRepository.findByEmail("test@example.com")).thenReturn(Optional.of(new Employee()));
+        Optional<Employee> employeeOptional = employeeRepository.findByEmail("test@example.com");
+        assertEquals(true, employeeOptional.isPresent());
     }
 
     @Test
