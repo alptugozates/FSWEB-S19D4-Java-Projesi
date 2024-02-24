@@ -1,12 +1,14 @@
 package com.workintech.controller;
 
 import com.workintech.entity.Employee;
+import com.workintech.exceptions.EmployeeNotFoundException;
 import com.workintech.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/workintech/employees")
@@ -17,47 +19,41 @@ public class EmployeeController {
     public EmployeeController(EmployeeService employeeService) {
         this.employeeService = employeeService;
     }
-    
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee> employees = employeeService.findAll();
-        return ResponseEntity.ok(employees);
+    public List<Employee> getAllEmployees() {
+        return employeeService.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
-        Employee employee = employeeService.findById(id);
-        return ResponseEntity.ok(employee);
+    public Employee getEmployeeById(@PathVariable Long id) {
+        return employeeService.findById(id);
     }
 
     @GetMapping("/byEmail/{email}")
-    public ResponseEntity<List<Employee>> getEmployeeByEmail(@PathVariable String email) {
-        List<Employee> employees = employeeService.findByEmail(email);
-        return ResponseEntity.ok(employees);
+    public Employee getEmployeeByEmail(@PathVariable String email) {
+        Optional<Employee> employee = employeeService.findByEmail(email);
+        return employee
+                .orElseThrow(() -> new EmployeeNotFoundException("Employee not found with given email: " + email));
     }
 
-    @GetMapping("/byOrder")
-    public ResponseEntity<List<Employee>> getEmployeesByOrder() {
-        List<Employee> employees = employeeService.findByOrderByLastName();
-        return ResponseEntity.ok(employees);
+    @GetMapping("/byOrder/")
+    public List<Employee> getEmployeesOrderByLastName() {
+        return employeeService.findByOrderByLastName();
     }
 
-    // [POST] /workintech/employees
     @PostMapping
-    public ResponseEntity<Employee> saveOrUpdateEmployee(@RequestBody Employee employee) {
-        Employee savedEmployee = employeeService.saveOrUpdate(employee);
-        return ResponseEntity.ok(savedEmployee);
+    public Employee saveOrUpdateEmployee(@RequestBody Employee employee) {
+        return employeeService.saveOrUpdate(employee);
     }
 
     @PostMapping("/bySalary/{salary}")
-    public ResponseEntity<List<Employee>> getEmployeesBySalary(@PathVariable double salary) {
-        List<Employee> employees = employeeService.findBySalaryGreaterThanOrderBySalaryDesc(salary);
-        return ResponseEntity.ok(employees);
+    public List<Employee> getEmployeesBySalaryGreaterThan(@PathVariable double salary) {
+        return employeeService.findBySalaryGreaterThanOrderBySalaryDesc(salary);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteEmployeeById(@PathVariable Long id) {
+    public void deleteEmployeeById(@PathVariable Long id) {
         employeeService.deleteById(id);
-        return ResponseEntity.ok("Employee with id " + id + " has been deleted.");
     }
+
 }
