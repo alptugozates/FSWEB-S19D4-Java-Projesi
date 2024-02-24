@@ -27,7 +27,6 @@ public class EmployeeServiceImplTest {
 
         Mockito.when(employeeRepository.findByEmail("test@example.com")).thenReturn(Arrays.asList(new Employee()));
         List<Employee> employees = employeeService.findByEmail("test@example.com");
-        // Assert statements based on your test data
         assertEquals(1, employees.size());
     }
 
